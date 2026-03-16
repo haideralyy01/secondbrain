@@ -91,5 +91,19 @@ app.get("/api/v1/contents", userMiddleware, async (req, res) => {
     }
 });
 
+app.delete("/api/v1/content", userMiddleware, async (req, res) => {
+    const { contentId } = req.body;
+    try {
+        await ContentModel.deleteOne({
+            contentId,
+            userId: new mongoose.Types.ObjectId(req.userId)
+        });
+        res.status(200).json({ message: "Content deleted successfully" });
+    } catch (e) {
+        console.error("Error deleting content:", e);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
 
 app.listen(3000)
