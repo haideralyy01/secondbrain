@@ -40,4 +40,3 @@ const UserModel = model('User', UserSchema);
 const LinkModel = model('Link', LinkSchema);
 
 export { UserModel, ContentModel, LinkModel }
-
