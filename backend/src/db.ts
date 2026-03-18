@@ -1,4 +1,3 @@
-
 import mongoose, { model, Schema } from 'mongoose';
 import dotenv from 'dotenv';
 dotenv.config();
