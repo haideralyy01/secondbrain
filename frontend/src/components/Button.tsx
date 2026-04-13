@@ -4,6 +4,7 @@ interface ButtonProps {
   variant: "primary" | "secondary";
   text: string;
   startIcon?: ReactElement; // made optional for flexibility
+  onClick?: () => void;
 }
 
 const variantClasses: Record<ButtonProps["variant"], string> = {
@@ -13,9 +14,10 @@ const variantClasses: Record<ButtonProps["variant"], string> = {
 
 const defaultStyles = "px-4 py-2 rounded-md font-light flex items-center cursor-pointer";
 
-export function Button({ variant, text, startIcon }: ButtonProps) {
+export function Button({ variant, text, startIcon, onClick }: ButtonProps) {
   return (
-    <button className={`${variantClasses[variant]} ${defaultStyles}`}>
+    <button className={`${variantClasses[variant]} ${defaultStyles}`}
+    onClick={onClick}>
       {startIcon && <span className="pr-1.5">{startIcon}</span>}
       {text}
     </button>

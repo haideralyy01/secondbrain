@@ -12,9 +12,9 @@ interface CardProps {
 }
 export function Card({title,body, link, type}: CardProps) {
     return (
-        <div className="bg-white border-b-gray-600 rounded-md shadow-md outline-slate-200 p-4 max-w-80">
+        <div className="bg-white border-b-gray-600 rounded-md shadow-md outline-slate-200 p-4 max-w-80 max-h-96 h-80 overflow-hidden flex flex-col">
             <div className="flex justify-between">
-                <div className="flex items-center gap-x-2">
+                <div className="flex items-center gap-x-2 w-72">
                     {type === "youtube" && (
                         <YoutubeIcon />
                     )}
@@ -37,7 +37,7 @@ export function Card({title,body, link, type}: CardProps) {
                     </div>
                 </div>
             </div>
-            <div className="pt-4">
+            <div className="pt-4 flex-1 overflow-auto scrollbar-hide">
                 { type === "youtube" && <iframe className="w-full" src={link?.replace("watch", "embed").replace("?v=", "/")} title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe> }
                 
                 { type === "twitter" && <blockquote className="twitter-tweet">
@@ -47,6 +47,11 @@ export function Card({title,body, link, type}: CardProps) {
                 { type === "note" && (
                     <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md text-gray-700">
                         {body}
+                    </div>
+                )}
+                {body && (type === "youtube" || type === "twitter") && (
+                    <div className="mt-3 p-3 bg-gray-50 border border-gray-200 rounded-md text-gray-700">
+                    {body}
                     </div>
                 )}
             </div>
