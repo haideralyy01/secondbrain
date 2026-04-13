@@ -11,7 +11,7 @@ const variantClasses: Record<ButtonProps["variant"], string> = {
   secondary: "bg-[#d9ddee] text-[#3730a3]",
 };
 
-const defaultStyles = "px-4 py-2 rounded-md font-light flex items-center";
+const defaultStyles = "px-4 py-2 rounded-md font-light flex items-center cursor-pointer";
 
 export function Button({ variant, text, startIcon }: ButtonProps) {
   return (
