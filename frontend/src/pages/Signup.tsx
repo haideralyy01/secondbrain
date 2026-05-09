@@ -1,14 +1,17 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export function Signup() {
     const navigate = useNavigate();
+    const { signup } = useAuth();
     const usernameRef = useRef<HTMLInputElement>(null);
     const emailRef = useRef<HTMLInputElement>(null);
     const passwordRef = useRef<HTMLInputElement>(null);
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    function handleSubmit(e: React.FormEvent) {
+    async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         const username = usernameRef.current?.value;
         const email = emailRef.current?.value;
@@ -19,9 +22,16 @@ export function Signup() {
             return;
         }
 
-        // TODO: Connect to backend signup API
-        console.log({ username, email, password });
-        navigate("/login");
+        try {
+            setLoading(true);
+            setError("");
+            await signup(username, email, password);
+            navigate("/");
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Signup failed");
+        } finally {
+            setLoading(false);
+        }
     }
 
     return (
@@ -86,9 +96,10 @@ export function Signup() {
 
                         <button
                             type="submit"
-                            className="w-full py-2.5 bg-[#7164c0] text-white rounded-lg font-medium text-sm hover:bg-[#5f54a8] transition-colors cursor-pointer shadow-md shadow-[#7164c0]/20"
+                            disabled={loading}
+                            className="w-full py-2.5 bg-[#7164c0] text-white rounded-lg font-medium text-sm hover:bg-[#5f54a8] transition-colors cursor-pointer shadow-md shadow-[#7164c0]/20 disabled:opacity-60 disabled:cursor-not-allowed"
                         >
-                            Create Account
+                            {loading ? "Creating account..." : "Create Account"}
                         </button>
                     </form>
 

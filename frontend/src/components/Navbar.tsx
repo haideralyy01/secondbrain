@@ -4,6 +4,7 @@ import { MenuIcon } from "../icons/MenuIcon";
 import { PlusIcon } from "../icons/PlusIcon";
 import { ShareIcon } from "../icons/ShareIcon";
 import { Button } from "./Button";
+import { useAuth } from "../context/AuthContext";
 
 interface NavbarProps {
     onMenuClick?: () => void;
@@ -14,7 +15,13 @@ interface NavbarProps {
 export function Navbar({ onMenuClick, onAddContent, showMenuButton = true }: NavbarProps) {
     const navigate = useNavigate();
     const location = useLocation();
+    const { isAuthenticated, user, logout } = useAuth();
     const isAuthPage = location.pathname === "/login" || location.pathname === "/signup";
+
+    function handleLogout() {
+        logout();
+        navigate("/login");
+    }
 
     return (
         <header className="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
@@ -71,6 +78,20 @@ export function Navbar({ onMenuClick, onAddContent, showMenuButton = true }: Nav
                                 text="Share brain"
                                 startIcon={<ShareIcon />}
                             />
+
+                            {isAuthenticated && (
+                                <div className="flex items-center gap-2 ml-2 pl-2 border-l border-gray-200">
+                                    <span className="text-sm text-gray-600 hidden sm:inline">
+                                        {user?.username}
+                                    </span>
+                                    <button
+                                        onClick={handleLogout}
+                                        className="px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                                    >
+                                        Logout
+                                    </button>
+                                </div>
+                            )}
                         </>
                     )}
                 </div>

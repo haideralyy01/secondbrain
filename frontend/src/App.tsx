@@ -3,6 +3,8 @@ import { Dashboard } from "./pages/Dashboard";
 import { Login } from "./pages/Login";
 import { Signup } from "./pages/Signup";
 import { Navbar } from "./components/Navbar";
+import { AuthProvider } from "./context/AuthContext";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 function AuthLayout({ children }: { children: React.ReactNode }) {
     return (
@@ -16,25 +18,34 @@ function AuthLayout({ children }: { children: React.ReactNode }) {
 function App() {
     return (
         <BrowserRouter>
-            <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route
-                    path="/login"
-                    element={
-                        <AuthLayout>
-                            <Login />
-                        </AuthLayout>
-                    }
-                />
-                <Route
-                    path="/signup"
-                    element={
-                        <AuthLayout>
-                            <Signup />
-                        </AuthLayout>
-                    }
-                />
-            </Routes>
+            <AuthProvider>
+                <Routes>
+                    <Route
+                        path="/"
+                        element={
+                            <ProtectedRoute>
+                                <Dashboard />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/login"
+                        element={
+                            <AuthLayout>
+                                <Login />
+                            </AuthLayout>
+                        }
+                    />
+                    <Route
+                        path="/signup"
+                        element={
+                            <AuthLayout>
+                                <Signup />
+                            </AuthLayout>
+                        }
+                    />
+                </Routes>
+            </AuthProvider>
         </BrowserRouter>
     );
 }
