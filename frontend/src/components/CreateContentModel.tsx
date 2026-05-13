@@ -1,28 +1,62 @@
+import axios from "axios";
 import { useRef, useState } from "react";
 import { CrossIcon } from "../icons/CrossIcon";
 
 interface ModelProps {
     open: boolean;
     onClose: () => void;
+    onCreate?: (content: ContentItem) => void;
 }
 
 type ContentType = "youtube" | "twitter" | "note";
 
-export function CreateCardModel({ open, onClose }: ModelProps) {
+interface ContentItem {
+    _id: string;
+    title: string;
+    type: ContentType;
+    link?: string;
+    body?: string;
+}
+
+export function CreateCardModel({ open, onClose, onCreate }: ModelProps) {
     const [type, setType] = useState<ContentType>("note");
     const titleRef = useRef<HTMLInputElement>(null);
     const linkRef = useRef<HTMLInputElement>(null);
     const bodyRef = useRef<HTMLTextAreaElement>(null);
+    const [loading, setLoading] = useState(false);
 
-    function handleSubmit() {
+    async function handleSubmit() {
         const title = titleRef.current?.value;
         const link = linkRef.current?.value;
         const body = bodyRef.current?.value;
 
-        // TODO: send data to backend
-        console.log({ title, link, body, type });
+        if (!title) {
+            return;
+        }
 
-        onClose()
+        try {
+            setLoading(true);
+            const token = localStorage.getItem("token");
+            const res = await axios.post(
+                "http://localhost:3000/api/v1/content",
+                {
+                    title,
+                    type,
+                    link: link || "",
+                    body: body || "",
+                },
+                {
+                    headers: {
+                        Authorization: token,
+                    },
+                }
+            );
+
+            onCreate?.(res.data.content);
+            onClose();
+        } finally {
+            setLoading(false);
+        }
     }
 
     if (!open) return null;
@@ -112,9 +146,10 @@ export function CreateCardModel({ open, onClose }: ModelProps) {
                     <div className="flex justify-end mt-6">
                         <button
                             onClick={handleSubmit}
-                            className="bg-[#7164c0] text-white px-6 py-2 rounded-md font-light flex items-center cursor-pointer hover:bg-[#5f54a8] transition-colors"
+                            disabled={loading}
+                            className="bg-[#7164c0] text-white px-6 py-2 rounded-md font-light flex items-center cursor-pointer hover:bg-[#5f54a8] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                         >
-                            Submit
+                            {loading ? "Saving..." : "Submit"}
                         </button>
                     </div>
                 </div>

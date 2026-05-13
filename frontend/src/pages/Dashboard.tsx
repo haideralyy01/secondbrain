@@ -1,37 +1,46 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import { Card } from "../components/Card";
 import { CreateCardModel } from "../components/CreateContentModel";
 import { SideBar } from "../components/SideBar";
 import { Navbar } from "../components/Navbar";
 
-// Dummy data — replace with real backend data later
-const allContent = [
-    {
-        id: "1",
-        title: "My Note",
-        body: "This is a sample note card.",
-        type: "note" as const,
-    },
-    {
-        id: "2",
-        title: "Twitter Post",
-        link: "https://x.com/aayushchugh/status/2043568889926463549?s=20",
-        type: "twitter" as const,
-        body: "Twitter",
-    },
-    {
-        id: "3",
-        title: "YouTube Video",
-        link: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-        type: "youtube" as const,
-        body: "youtube",
-    },
-];
+type ContentType = "youtube" | "twitter" | "note";
+
+type ContentItem = {
+    _id: string;
+    title: string;
+    body?: string;
+    link?: string;
+    type: ContentType;
+};
 
 export function Dashboard() {
     const [modalOpen, setModalOpen] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [activeFilter, setActiveFilter] = useState("all");
+    const [allContent, setAllContent] = useState<ContentItem[]>([]);
+
+    useEffect(() => {
+        async function loadContent() {
+            const token = localStorage.getItem("token");
+            const res = await axios.get("http://localhost:3000/api/v1/contents", {
+                headers: {
+                    Authorization: token,
+                },
+            });
+
+            setAllContent(res.data.content || []);
+        }
+
+        loadContent().catch((err) => {
+            console.error("Failed to load content:", err);
+        });
+    }, []);
+
+    function handleCreate(content: ContentItem) {
+        setAllContent((current) => [content, ...current]);
+    }
 
     // Filter content based on sidebar selection
     const filteredContent = activeFilter === "all"
@@ -89,7 +98,7 @@ export function Dashboard() {
                         <div className="flex flex-wrap gap-4">
                             {filteredContent.map((item) => (
                                 <Card
-                                    key={item.id}
+                                    key={item._id}
                                     title={item.title}
                                     body={item.body}
                                     link={item.link}
@@ -110,7 +119,11 @@ export function Dashboard() {
             </div>
 
             {/* Modal */}
-            <CreateCardModel open={modalOpen} onClose={() => setModalOpen(false)} />
+            <CreateCardModel
+                open={modalOpen}
+                onClose={() => setModalOpen(false)}
+                onCreate={handleCreate}
+            />
         </div>
     );
 }

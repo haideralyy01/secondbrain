@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 dotenv.config();
+import cors from 'cors';
 import mongoose from 'mongoose';
 import { UserModel, ContentModel, LinkModel } from './db.js';
 import jwt from 'jsonwebtoken';
@@ -12,33 +13,42 @@ import { random } from './utils.js';
 const app = express();
 app.use(express.json());
 
-app.post("/api/v1/signup", async (req, res) => {
-    const { username, password } = req.body;
+app.use(cors({
+    origin: 'http://localhost:8080',
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true
+}));
 
-    if (!username || !password) {
-        return res.status(400).json({ message: "Username and password are required" });
+app.post("/api/v1/signup", async (req, res) => {
+    const { name, email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ message: "Email and password are required" });
     }
 
     try {
-        const user = await UserModel.create({ username, password });
+        const user = await UserModel.create({ name, email, password });
+        const token = jwt.sign({ id: user._id }, JWT_SECRET);
         res.status(200).json({
             message: "User signed up successfully",
-            user: { username: user.username }
+            user: { name: user.name, email: user.email },
+            token
         });
     } catch (e: any) {
         console.error("Error signing up user:", e);
         if (e.code === 11000) {
-            return res.status(409).json({ message: "Username already exists" });
+            return res.status(409).json({ message: "User already exists" });
         }
         res.status(500).json({ message: "Internal server error" });
     }
 });
 
 app.post("/api/v1/signin", async (req, res) => {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
     try {
-        const user = await UserModel.findOne({ username });
+        const user = await UserModel.findOne({ email });
         if (!user) {
             return res.status(403).json({ msg: "User does not exist" });
         }
@@ -46,12 +56,14 @@ app.post("/api/v1/signin", async (req, res) => {
         if (user.password !== password) {
             return res.status(401).json({ msg: "Invalid password" });
         }
-
-        if (!JWT_SECRET) {
-            return res.status(500).json({ msg: "JWT secret is not set in environment variables" });
-        }
         const token = jwt.sign({ id: user._id }, JWT_SECRET);
-        res.status(200).json({ token });
+        res.status(200).json({
+            token,
+            user: {
+                name: user.name,
+                email: user.email,
+            }
+         });
     } catch (e) {
         console.error("Error during signin:", e);
         res.status(500).json({ msg: "Internal server error" });
@@ -59,15 +71,17 @@ app.post("/api/v1/signin", async (req, res) => {
 });
 
 app.post("/api/v1/content", userMiddleware, async (req, res) => {
-    const {title, link} = req.body;
-    if (!title || !link) {
-        return res.status(400).json({ message: "Title and link are required" });
+    const { title, link, body, type } = req.body;
+    if (!title || !type) {
+        return res.status(400).json({ message: "Title and type are required" });
     }
     try{
         const content = await ContentModel.create({
             userId: new mongoose.Types.ObjectId(req.userId),
             title,
-            link,
+            type,
+            link: link || "",
+            body: body || "",
             tags: [],
         });
         res.status(200).json({ message: "Content created successfully", content });
@@ -131,7 +145,7 @@ app.get("/api/v1/brain/:shareLink", async (req, res) => {
     });
 
     res.status(200).json({
-        username: user?.username,
+        email: user?.name,
         content: content
     });
 });

@@ -18,14 +18,18 @@ dotenv.config();
 })();
 
 const UserSchema = new Schema({
-    username: { type: String, unique: true },
-    password: String
+  name: { type: String, required: true, trim: true },
+  email: { type: String, unique: true, required: true, lowercase: true },
+  password: { type: String, required: true }
 });
+
 
 const ContentSchema = new Schema({
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     title: String,
+    type: { type: String, enum: ['youtube', 'twitter', 'note'], required: true },
     link: String,
+    body: String,
     tags: [{type: Schema.Types.ObjectId, ref: 'Tags'}]
 });
 
