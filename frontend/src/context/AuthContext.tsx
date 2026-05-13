@@ -19,6 +19,18 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
+function getErrorMessage(error: unknown, fallback: string) {
+    if (axios.isAxiosError(error)) {
+        return error.response?.data?.message || error.response?.data?.msg || fallback;
+    }
+
+    if (error instanceof Error) {
+        return error.message || fallback;
+    }
+
+    return fallback;
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -49,14 +61,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
             if (res.status === 200) {
                 setUser(res.data.user);
-                console.log(user);
                 localStorage.setItem("token", res.data.token);
                 localStorage.setItem("user", JSON.stringify(res.data.user));
             } else {
                 throw new Error(res.data.message || "Login failed");
             }
         } catch (err) {
-            throw err instanceof Error ? err : new Error("Login failed");
+            throw new Error(getErrorMessage(err, "Login failed"));
         }
     }
 
@@ -76,7 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 throw new Error(res.data.message || "Signup failed");
             }
         } catch (err) {
-            throw err instanceof Error ? err : new Error("Signup failed");
+            throw new Error(getErrorMessage(err, "Signup failed"));
         }
     }
 

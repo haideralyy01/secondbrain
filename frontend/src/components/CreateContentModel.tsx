@@ -24,6 +24,7 @@ export function CreateCardModel({ open, onClose, onCreate }: ModelProps) {
     const linkRef = useRef<HTMLInputElement>(null);
     const bodyRef = useRef<HTMLTextAreaElement>(null);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
     async function handleSubmit() {
         const title = titleRef.current?.value;
@@ -31,11 +32,13 @@ export function CreateCardModel({ open, onClose, onCreate }: ModelProps) {
         const body = bodyRef.current?.value;
 
         if (!title) {
+            setError("Title is required");
             return;
         }
 
         try {
             setLoading(true);
+            setError("");
             const token = localStorage.getItem("token");
             const res = await axios.post(
                 "http://localhost:3000/api/v1/content",
@@ -54,6 +57,12 @@ export function CreateCardModel({ open, onClose, onCreate }: ModelProps) {
 
             onCreate?.(res.data.content);
             onClose();
+        } catch (err) {
+            if (axios.isAxiosError(err)) {
+                setError(err.response?.data?.message || "Failed to save content");
+            } else {
+                setError("Failed to save content");
+            }
         } finally {
             setLoading(false);
         }
@@ -80,6 +89,12 @@ export function CreateCardModel({ open, onClose, onCreate }: ModelProps) {
                             <CrossIcon />
                         </button>
                     </div>
+
+                    {error && (
+                        <div className="mb-4 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
+                            {error}
+                        </div>
+                    )}
 
                     <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-600 mb-1.5">
