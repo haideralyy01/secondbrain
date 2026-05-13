@@ -4,6 +4,7 @@ import { Card } from "../components/Card";
 import { CreateCardModel } from "../components/CreateContentModel";
 import { SideBar } from "../components/SideBar";
 import { Navbar } from "../components/Navbar";
+import ShareLinkModal from "../components/ShareLinkModal";
 
 type ContentType = "youtube" | "twitter" | "note";
 
@@ -20,6 +21,10 @@ export function Dashboard() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [activeFilter, setActiveFilter] = useState("all");
     const [allContent, setAllContent] = useState<ContentItem[]>([]);
+    const [shareMessage, setShareMessage] = useState("");
+    const [sharing, setSharing] = useState(false);
+    const [shareModalOpen, setShareModalOpen] = useState(false);
+    const [shareUrl, setShareUrl] = useState<string | undefined>(undefined);
 
     useEffect(() => {
         async function loadContent() {
@@ -40,6 +45,34 @@ export function Dashboard() {
 
     function handleCreate(content: ContentItem) {
         setAllContent((current) => [content, ...current]);
+    }
+
+    async function handleShareBrain() {
+        try {
+            setSharing(true);
+            setShareMessage("");
+
+            const token = localStorage.getItem("token");
+            const res = await axios.post(
+                "http://localhost:3000/api/v1/brain/share",
+                { share: true },
+                {
+                    headers: {
+                        Authorization: token,
+                    },
+                }
+            );
+
+            const url = `${window.location.origin}/share/${res.data.shareLink}`;
+            setShareUrl(url);
+            setShareModalOpen(true);
+            setShareMessage(`Share link generated`);
+        } catch (err) {
+            console.error("Failed to create share link:", err);
+            setShareMessage("Failed to create share link");
+        } finally {
+            setSharing(false);
+        }
     }
 
     // Filter content based on sidebar selection
@@ -66,6 +99,7 @@ export function Dashboard() {
             <Navbar
                 onMenuClick={() => setSidebarOpen(!sidebarOpen)}
                 onAddContent={() => setModalOpen(true)}
+                onShareBrain={handleShareBrain}
             />
 
             {/* Content area: Sidebar + Main */}
@@ -83,6 +117,12 @@ export function Dashboard() {
 
                 {/* Main Content */}
                 <main className="flex-1 overflow-auto p-4 lg:p-6">
+                    {shareMessage && (
+                        <div className="mb-4 rounded-xl border border-[#7164c0]/20 bg-[#e8e5f5] px-4 py-3 text-sm text-[#4b3f8f]">
+                            {sharing ? "Creating share link..." : shareMessage}
+                        </div>
+                    )}
+
                     {/* Section heading */}
                     <div className="mb-6">
                         <h2 className="text-xl font-semibold text-gray-800">
@@ -123,6 +163,11 @@ export function Dashboard() {
                 open={modalOpen}
                 onClose={() => setModalOpen(false)}
                 onCreate={handleCreate}
+            />
+            <ShareLinkModal
+                open={shareModalOpen}
+                shareUrl={shareUrl}
+                onClose={() => setShareModalOpen(false)}
             />
         </div>
     );

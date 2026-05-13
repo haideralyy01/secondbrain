@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Dashboard } from "./pages/Dashboard";
 import { Login } from "./pages/Login";
 import { Signup } from "./pages/Signup";
+import { SharedBrain } from "./pages/SharedBrain";
 import { Navbar } from "./components/Navbar";
 import { AuthProvider } from "./context/AuthContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -27,6 +28,10 @@ function App() {
                                 <Dashboard />
                             </ProtectedRoute>
                         }
+                    />
+                    <Route
+                        path="/share/:shareLink"
+                        element={<SharedBrain />}
                     />
                     <Route
                         path="/login"

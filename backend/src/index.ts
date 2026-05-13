@@ -144,14 +144,18 @@ app.get("/api/v1/contents", userMiddleware, async (req, res) => {
 app.post("/api/v1/brain/share", userMiddleware, async (req, res) => {
     const { share } = req.body;
     if (share) {
-        const shareLink = await LinkModel.create({
-            userId:  new mongoose.Types.ObjectId(req.userId),
-            hash: random(10)
-        })
-        res.status(200).json({
-        message: "Share linkk created successfully",
-        shareLink: shareLink.hash
-    })
+        const userId = new mongoose.Types.ObjectId(req.userId);
+        // Use an atomic upsert to avoid duplicate-key errors when multiple requests happen concurrently
+        const link = await LinkModel.findOneAndUpdate(
+            { userId },
+            { $setOnInsert: { hash: random(10), userId } },
+            { upsert: true, new: true }
+        );
+
+        return res.status(200).json({
+            message: "Share link created successfully",
+            shareLink: link?.hash,
+        });
     } else {
         await LinkModel.deleteOne({
             userId: new mongoose.Types.ObjectId(req.userId)
@@ -182,7 +186,8 @@ app.get("/api/v1/brain/:shareLink", async (req, res) => {
     });
 
     res.status(200).json({
-        email: user?.name,
+        name: user?.name,
+        email: user?.email,
         content: content
     });
 });

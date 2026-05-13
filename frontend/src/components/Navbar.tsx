@@ -9,10 +9,11 @@ import { useAuth } from "../context/AuthContext";
 interface NavbarProps {
     onMenuClick?: () => void;
     onAddContent?: () => void;
+    onShareBrain?: () => void;
     showMenuButton?: boolean;
 }
 
-export function Navbar({ onMenuClick, onAddContent, showMenuButton = true }: NavbarProps) {
+export function Navbar({ onMenuClick, onAddContent, onShareBrain, showMenuButton = true }: NavbarProps) {
     const navigate = useNavigate();
     const location = useLocation();
     const {user, logout, isAuthenticated} = useAuth();
@@ -77,6 +78,7 @@ export function Navbar({ onMenuClick, onAddContent, showMenuButton = true }: Nav
                                 variant="secondary"
                                 text="Share brain"
                                 startIcon={<ShareIcon />}
+                                onClick={onShareBrain}
                             />
 
                             {isAuthenticated && (
