@@ -1,11 +1,14 @@
 import axios from "axios";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { CrossIcon } from "../icons/CrossIcon";
 
 interface ModelProps {
     open: boolean;
     onClose: () => void;
     onCreate?: (content: ContentItem) => void;
+    // optional edit mode
+    contentToEdit?: ContentItem | null;
+    onUpdate?: (content: ContentItem) => void;
 }
 
 type ContentType = "youtube" | "twitter" | "note";
@@ -18,13 +21,29 @@ interface ContentItem {
     body?: string;
 }
 
-export function CreateCardModel({ open, onClose, onCreate }: ModelProps) {
+export function CreateCardModel({ open, onClose, onCreate, contentToEdit, onUpdate }: ModelProps) {
     const [type, setType] = useState<ContentType>("note");
     const titleRef = useRef<HTMLInputElement>(null);
     const linkRef = useRef<HTMLInputElement>(null);
     const bodyRef = useRef<HTMLTextAreaElement>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+
+    // Prefill form when editing
+    useEffect(() => {
+        if (contentToEdit && open) {
+            setType(contentToEdit.type);
+            if (titleRef.current) titleRef.current.value = contentToEdit.title || "";
+            if (linkRef.current) linkRef.current.value = contentToEdit.link || "";
+            if (bodyRef.current) bodyRef.current.value = contentToEdit.body || "";
+        } else if (!open) {
+            // Reset form when closing
+            setType("note");
+            if (titleRef.current) titleRef.current.value = "";
+            if (linkRef.current) linkRef.current.value = "";
+            if (bodyRef.current) bodyRef.current.value = "";
+        }
+    }, [contentToEdit, open]);
 
     async function handleSubmit() {
         const title = titleRef.current?.value;
@@ -40,22 +59,21 @@ export function CreateCardModel({ open, onClose, onCreate }: ModelProps) {
             setLoading(true);
             setError("");
             const token = localStorage.getItem("token");
-            const res = await axios.post(
-                "http://localhost:3000/api/v1/content",
-                {
-                    title,
-                    type,
-                    link: link || "",
-                    body: body || "",
-                },
-                {
-                    headers: {
-                        Authorization: token,
-                    },
-                }
-            );
-
-            onCreate?.(res.data.content);
+            if (contentToEdit && contentToEdit._id) {
+                const res = await axios.put(
+                    `http://localhost:3000/api/v1/content/${contentToEdit._id}`,
+                    { title, type, link: link || "", body: body || "" },
+                    { headers: { Authorization: token } }
+                );
+                onUpdate?.(res.data.content);
+            } else {
+                const res = await axios.post(
+                    "http://localhost:3000/api/v1/content",
+                    { title, type, link: link || "", body: body || "" },
+                    { headers: { Authorization: token } }
+                );
+                onCreate?.(res.data.content);
+            }
             onClose();
         } catch (err) {
             if (axios.isAxiosError(err)) {
@@ -81,7 +99,7 @@ export function CreateCardModel({ open, onClose, onCreate }: ModelProps) {
                 <div className="bg-white rounded-lg shadow-xl p-6">
                     {/* Header */}
                     <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-lg font-semibold text-gray-800">Add New Content</h2>
+                        <h2 className="text-lg font-semibold text-gray-800">{contentToEdit ? "Edit Content" : "Add New Content"}</h2>
                         <button
                             onClick={onClose}
                             className="text-gray-400 hover:text-gray-600 cursor-pointer transition-colors"
@@ -164,7 +182,7 @@ export function CreateCardModel({ open, onClose, onCreate }: ModelProps) {
                             disabled={loading}
                             className="bg-[#7164c0] text-white px-6 py-2 rounded-md font-light flex items-center cursor-pointer hover:bg-[#5f54a8] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                         >
-                            {loading ? "Saving..." : "Submit"}
+                            {loading ? "Saving..." : contentToEdit ? "Update" : "Submit"}
                         </button>
                     </div>
                 </div>

@@ -121,9 +121,53 @@ app.post("/api/v1/content", userMiddleware, async (req, res) => {
             body: body || "",
             tags: [],
         });
-        res.status(200).json({ message: "Content created successfully", content });
+        res.status(200).json({ message: "Content created successfully", content});
     } catch (e) {
         console.error("Error creating content:", e);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+app.put("/api/v1/content/:id", userMiddleware, async(req, res) => {
+    const parse = contentSchema.safeParse(req.body);
+    if (!parse.success) {
+        return res.status(400).json({ message: getValidationMessage(parse.error) });
+    }
+    const { title, link, body, type } = parse.data;
+    const contentId = req.params.id;
+    try {
+        const content = await ContentModel.findByIdAndUpdate({
+            _id: contentId,
+            userId: new mongoose.Types.ObjectId(req.userId)
+        }, {
+            title,
+            type,
+            link: link || "",
+            body: body || "",
+        }, { new: true });
+        if (!content) {
+            return res.status(404).json({ message: "Content not found" });
+        }
+        res.status(200).json({ message: "Content updated successfully", content });
+    } catch (e) {
+        console.error("Error updating content:", e);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+app.delete("/api/v1/content/:id", userMiddleware, async(req, res) => {
+    const contentId = req.params.id;
+    try {
+        const content = await ContentModel.findOneAndDelete({
+            _id: contentId,
+            userId: new mongoose.Types.ObjectId(req.userId)
+        });
+        if (!content) {
+            return res.status(404).json({ message: "Content not found" });
+        }
+        res.status(200).json({ message: "Content deleted successfully" });
+    } catch (e) {
+        console.error("Error deleting content:", e);
         res.status(500).json({ message: "Internal server error" });
     }
 });

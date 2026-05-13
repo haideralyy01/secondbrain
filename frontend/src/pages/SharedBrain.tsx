@@ -6,7 +6,7 @@ import { Card } from "../components/Card";
 type ContentType = "youtube" | "twitter" | "note";
 
 type ContentItem = {
-    _id: string;
+    _id?: string;
     title: string;
     body?: string;
     link?: string;

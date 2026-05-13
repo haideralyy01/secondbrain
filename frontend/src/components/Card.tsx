@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { DeleteIcon } from "../icons/DeleteIcon";
 import { NoteIcon } from "../icons/NoteIcon";
-import { ShareIcon } from "../icons/ShareIcon";
 import { TwitterIcon } from "../icons/TwitterIcon";
 import { YoutubeIcon } from "../icons/YoutubeIcon";
+import { EditIcon } from "../icons/EditIcon";
 
 function getYoutubeEmbedUrl(link?: string) {
     if (!link) return "";
@@ -56,12 +56,15 @@ function loadTwitterWidgets() {
 }
 
 interface CardProps {
+    _id?: string;
     title: string;
     body?: string;
     link?: string;
     type: "twitter" | "youtube" | "note";
+    onDelete?: (id: string) => void;
+    onEdit?: (id: string) => void;
 }
-export function Card({title,body, link, type}: CardProps) {
+export function Card({ _id, title, body, link, type, onDelete, onEdit }: CardProps) {
     useEffect(() => {
         if (type === "twitter") {
             loadTwitterWidgets();
@@ -86,12 +89,20 @@ export function Card({title,body, link, type}: CardProps) {
                     </div>
                 </div>
                 <div className="flex items-center gap-x-4">
-                    <a href={link} target="._blank" className="cursor-pointer">
-                        <ShareIcon />
-                    </a>
-                    <div className="cursor-pointer">
-                        <DeleteIcon />
-                    </div>
+                    {onEdit && _id ? (
+                        <button onClick={() => onEdit(_id)} className="cursor-pointer">
+                            <EditIcon />
+                        </button>
+                    ) : (
+                        <a href={link} target="_blank" className="cursor-pointer">
+                            <EditIcon />
+                        </a>
+                    )}
+                    {onDelete && _id && (
+                        <div className="cursor-pointer" onClick={() => onDelete(_id)}>
+                            <DeleteIcon />
+                        </div>
+                    )}
                 </div>
             </div>
             <div className="pt-4 flex-1 overflow-auto scrollbar-hide">

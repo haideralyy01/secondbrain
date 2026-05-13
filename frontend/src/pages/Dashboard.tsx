@@ -47,6 +47,34 @@ export function Dashboard() {
         setAllContent((current) => [content, ...current]);
     }
 
+    // Edit flow: open modal with selected content to edit
+    const [editContent, setEditContent] = useState<ContentItem | null>(null);
+
+    function openEditModal(item: ContentItem) {
+        setEditContent(item);
+        setModalOpen(true);
+    }
+
+    function handleUpdate(content: ContentItem) {
+        setAllContent((current) => current.map((c) => (c._id === content._id ? content : c)));
+    }
+
+    async function handleDelete(id: string) {
+        // optimistic UI removal
+        const previous = allContent;
+        setAllContent((current) => current.filter((c) => c._id !== id));
+        try {
+            const token = localStorage.getItem("token");
+            await axios.delete(`http://localhost:3000/api/v1/content/${id}`, {
+                headers: { Authorization: token },
+            });
+        } catch (err) {
+            console.error("Failed to delete content:", err);
+            // revert on error
+            setAllContent(previous);
+        }
+    }
+
     async function handleShareBrain() {
         try {
             setSharing(true);
@@ -139,10 +167,13 @@ export function Dashboard() {
                             {filteredContent.map((item) => (
                                 <Card
                                     key={item._id}
+                                    _id={item._id}
                                     title={item.title}
                                     body={item.body}
                                     link={item.link}
                                     type={item.type}
+                                    onDelete={handleDelete}
+                                    onEdit={() => openEditModal(item)}
                                 />
                             ))}
                         </div>
@@ -161,8 +192,10 @@ export function Dashboard() {
             {/* Modal */}
             <CreateCardModel
                 open={modalOpen}
-                onClose={() => setModalOpen(false)}
+                onClose={() => { setModalOpen(false); setEditContent(null); }}
                 onCreate={handleCreate}
+                contentToEdit={editContent}
+                onUpdate={handleUpdate}
             />
             <ShareLinkModal
                 open={shareModalOpen}
