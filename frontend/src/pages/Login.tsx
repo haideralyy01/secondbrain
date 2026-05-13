@@ -1,14 +1,24 @@
-import { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export function Login() {
     const navigate = useNavigate();
-    const { login } = useAuth();
+    const { login, isAuthenticated, isLoading } = useAuth();
     const emailRef = useRef<HTMLInputElement>(null);
     const passwordRef = useRef<HTMLInputElement>(null);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (!isLoading && isAuthenticated) {
+            navigate("/", { replace: true });
+        }
+    }, [isAuthenticated, isLoading, navigate]);
+
+    if (!isLoading && isAuthenticated) {
+        return <Navigate to="/" replace />;
+    }
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -33,7 +43,7 @@ export function Login() {
     }
 
     return (
-        <div className="flex-1 flex items-center justify-center px-4 py-12 bg-gradient-to-br from-gray-50 via-white to-[#e8e5f5]/30">
+        <div className="flex-1 flex items-center justify-center px-4 py-12 bg-linear-to-br from-gray-50 via-white to-[#e8e5f5]/30">
             <div className="w-full max-w-md">
                 {/* Card */}
                 <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">

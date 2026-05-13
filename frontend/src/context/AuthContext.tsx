@@ -2,7 +2,7 @@ import axios from "axios";
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
 
 interface User {
-    username: string;
+    name: string;
     email: string;
 }
 
@@ -13,7 +13,7 @@ interface AuthContextType {
     isLoading: boolean;
     isAuthenticated: boolean;
     login: (email: string, password: string) => Promise<void>;
-    signup: (username: string, email: string, password: string) => Promise<void>;
+    signup: (name: string, email: string, password: string) => Promise<void>;
     logout: () => void;
 }
 
@@ -25,26 +25,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // On mount, check localStorage for existing session
     useEffect(() => {
-        const savedToken = localStorage.getItem("token");
         const savedUser = localStorage.getItem("user");
-
-        if (savedToken && savedUser) {
-            setUser(JSON.parse(savedUser));
+        if (savedUser && savedUser !== "undefined") {
+            try {
+                setUser(JSON.parse(savedUser));
+            } catch (err) {
+                console.error("Invalid user JSON:", err);
+                localStorage.removeItem("user");
+            }
         }
         setIsLoading(false);
     }, []);
+
 
     const isAuthenticated = !!user;
 
     async function login(email: string, password: string) {
         try {
-            const res = await axios.post("http://localhost:3000/api/login", {
+            const res = await axios.post("http://localhost:3000/api/v1/signin", {
                 email,
                 password,
             });
 
             if (res.status === 200) {
                 setUser(res.data.user);
+                console.log(user);
                 localStorage.setItem("token", res.data.token);
                 localStorage.setItem("user", JSON.stringify(res.data.user));
             } else {
@@ -55,10 +60,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     }
 
-    async function signup(username: string, email: string, password: string) {
+    async function signup(name: string, email: string, password: string) {
         try {
-            const res = await axios.post("http://localhost:3000/api/signup", {
-                username,
+            const res = await axios.post("http://localhost:3000/api/v1/signup", {
+                name,
                 email,
                 password,
             });

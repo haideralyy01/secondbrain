@@ -15,7 +15,7 @@ interface NavbarProps {
 export function Navbar({ onMenuClick, onAddContent, showMenuButton = true }: NavbarProps) {
     const navigate = useNavigate();
     const location = useLocation();
-    const { isAuthenticated, user, logout } = useAuth();
+    const {user, logout, isAuthenticated} = useAuth();
     const isAuthPage = location.pathname === "/login" || location.pathname === "/signup";
 
     function handleLogout() {
@@ -82,7 +82,7 @@ export function Navbar({ onMenuClick, onAddContent, showMenuButton = true }: Nav
                             {isAuthenticated && (
                                 <div className="flex items-center gap-2 ml-2 pl-2 border-l border-gray-200">
                                     <span className="text-sm text-gray-600 hidden sm:inline">
-                                        {user?.username}
+                                        {user?.name}
                                     </span>
                                     <button
                                         onClick={handleLogout}
