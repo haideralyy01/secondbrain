@@ -73,15 +73,16 @@ export function SharedBrain() {
 
             <main className="max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
                 {content.length > 0 ? (
-                    <div className="flex flex-wrap gap-4">
+                    <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4">
                         {content.map((item) => (
-                            <Card
-                                key={item._id}
-                                title={item.title}
-                                body={item.body}
-                                link={item.link}
-                                type={item.type}
-                            />
+                            <div key={item._id} className="break-inside-avoid mb-4">
+                                <Card
+                                    title={item.title}
+                                    body={item.body}
+                                    link={item.link}
+                                    type={item.type}
+                                />
+                            </div>
                         ))}
                     </div>
                 ) : (

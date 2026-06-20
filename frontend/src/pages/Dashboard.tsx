@@ -163,18 +163,19 @@ export function Dashboard() {
 
                     {/* Cards grid */}
                     {filteredContent.length > 0 ? (
-                        <div className="flex flex-wrap gap-4">
+                        <div className="columns-1 sm:columns-2 md:columns-3 xl:columns-4 gap-4">
                             {filteredContent.map((item) => (
-                                <Card
-                                    key={item._id}
-                                    _id={item._id}
-                                    title={item.title}
-                                    body={item.body}
-                                    link={item.link}
-                                    type={item.type}
-                                    onDelete={handleDelete}
-                                    onEdit={() => openEditModal(item)}
-                                />
+                                <div key={item._id} className="break-inside-avoid mb-4">
+                                    <Card
+                                        _id={item._id}
+                                        title={item.title}
+                                        body={item.body}
+                                        link={item.link}
+                                        type={item.type}
+                                        onDelete={handleDelete}
+                                        onEdit={() => openEditModal(item)}
+                                    />
+                                </div>
                             ))}
                         </div>
                     ) : (
