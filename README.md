@@ -1,254 +1,278 @@
-    # Second Brain
+# 🧠 Second Brain
 
-    A full-stack web application for managing and sharing your personal knowledge base. Save notes, YouTube videos, and tweets in one place, organize them by type, and share your brain with others.
+A full-stack web application for managing and sharing your personal knowledge base. Save notes, YouTube videos, and tweets in one place, organize them by type, and share your brain with others.
 
-    ## Tech Stack
+![Node.js](https://img.shields.io/badge/Node.js-18+-green?logo=node.js)
+![React](https://img.shields.io/badge/React-19-blue?logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)
+![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-green?logo=mongodb)
+![License](https://img.shields.io/badge/License-MIT-yellow)
 
-    ### Frontend
-    - **React 19** with TypeScript
-    - **Vite** for fast builds
-    - **Tailwind CSS** for styling
-    - **react-router-dom v7** for routing
-    - **axios** for HTTP requests
+---
 
-    ### Backend
-    - **Node.js** with Express (ESM)
-    - **TypeScript** for type safety
-    - **MongoDB** with Mongoose for data persistence
-    - **JWT** for authentication
-    - **bcryptjs** for password hashing
-    - **Zod** for request validation
+## ✨ Features
 
-    ## Project Structure
+- **Save anything** — notes, YouTube videos, and tweets in one place
+- **Filter by type** — view All, Notes, Videos, or Tweets instantly
+- **Edit & Delete** — full CRUD with optimistic UI updates
+- **Share your brain** — generate a public read-only link for others
+- **Rich embeds** — YouTube player and Twitter widget auto-loaded
+- **Secure auth** — JWT + bcrypt, persisted via localStorage
 
-    ```
-    SecondBrain/
-    ├── frontend/
-    │   ├── src/
-    │   │   ├── components/          # Reusable React components
-    │   │   │   ├── Button.tsx
-    │   │   │   ├── Card.tsx
-    │   │   │   ├── CreateContentModel.tsx
-    │   │   │   ├── Navbar.tsx
-    │   │   │   ├── ProtectedRoute.tsx
-    │   │   │   ├── ShareLinkModal.tsx
-    │   │   │   ├── SideBar.tsx
-    │   │   ├── context/
-    │   │   │   └── AuthContext.tsx  # Auth state management
-    │   │   ├── icons/               # SVG icon components
-    │   │   ├── pages/
-    │   │   │   ├── Dashboard.tsx    # Main content management
-    │   │   │   ├── Login.tsx
-    │   │   │   ├── Signup.tsx
-    │   │   │   ├── SharedBrain.tsx  # Public shared brain view
-    │   │   ├── App.tsx
-    │   │   ├── main.tsx
-    │   │   └── index.css
-    │   ├── package.json
-    │   ├── tsconfig.json
-    │   └── vite.config.ts
-    │
-    ├── backend/
-    │   ├── src/
-    │   │   ├── index.ts             # Main API routes
-    │   │   ├── db.ts                # Mongoose models
-    │   │   ├── config.ts            # Configuration
-    │   │   ├── middleware.ts        # Auth middleware
-    │   │   └── utils.ts             # Utility functions
-    │   ├── package.json
-    │   ├── tsconfig.json
-    │   └── .env                     # Environment variables
-    │
-    └── README.md
-    ```
+---
 
-    ## Features
+## 🛠 Tech Stack
 
-    ### Authentication
-    - User signup and login with bcrypt password hashing
-    - JWT-based session management
-    - Protected routes (Dashboard)
-    - Persistent login via localStorage
+### Frontend
+| Tool | Purpose |
+|------|---------|
+| React 19 + TypeScript | UI framework |
+| Vite | Fast dev builds |
+| Tailwind CSS | Styling |
+| react-router-dom v7 | Routing |
+| axios | HTTP requests |
 
-    ### Content Management
-    - **Create** notes, YouTube videos, and tweet links
-    - **Read** all content in a filterable dashboard
-    - **Update** existing content with prefilled modal
-    - **Delete** content with optimistic UI updates
-    - Filter content by type (All, Notes, Videos, Tweets)
+### Backend
+| Tool | Purpose |
+|------|---------|
+| Node.js + Express (ESM) | Server |
+| TypeScript | Type safety |
+| MongoDB + Mongoose | Database |
+| JWT | Authentication |
+| bcryptjs | Password hashing |
+| Zod | Request validation |
 
-    ### Sharing
-    - Generate shareable links for your entire brain
-    - Atomic upsert prevents duplicate share links
-    - Public read-only view of shared brains (no auth required)
-    - Copy share link or open directly
+---
 
-    ### Embeds & Rich Content
-    - **YouTube**: Parses video ID from various URL formats and embeds player
-    - **Twitter**: Normalizes x.com → twitter.com and loads Twitter widget
-    - **Notes**: Simple text content with formatting
+## 📁 Project Structure
 
-    ## Getting Started
+```
+SecondBrain/
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── Button.tsx
+│   │   │   ├── Card.tsx
+│   │   │   ├── CreateContentModel.tsx
+│   │   │   ├── Navbar.tsx
+│   │   │   ├── ProtectedRoute.tsx
+│   │   │   ├── ShareLinkModal.tsx
+│   │   │   └── SideBar.tsx
+│   │   ├── context/
+│   │   │   └── AuthContext.tsx       # Auth state management
+│   │   ├── icons/                    # SVG icon components
+│   │   ├── pages/
+│   │   │   ├── Dashboard.tsx         # Main content management
+│   │   │   ├── Login.tsx
+│   │   │   ├── Signup.tsx
+│   │   │   └── SharedBrain.tsx       # Public shared brain view
+│   │   ├── App.tsx
+│   │   ├── main.tsx
+│   │   └── index.css
+│   ├── package.json
+│   ├── tsconfig.json
+│   └── vite.config.ts
+│
+├── backend/
+│   ├── src/
+│   │   ├── index.ts                  # Main API routes & server entry
+│   │   ├── db.ts                     # Mongoose models
+│   │   ├── config.ts                 # Configuration
+│   │   ├── middleware.ts             # Auth middleware
+│   │   └── utils.ts                  # Utility functions
+│   ├── package.json
+│   ├── tsconfig.json
+│   └── .env                          # Environment variables (never commit)
+│
+└── README.md
+```
 
-    ### Prerequisites
-    - Node.js (v16+)
-    - npm or yarn
-    - MongoDB (local or cloud)
+---
 
-    ### Installation
+## 🚀 Getting Started
 
-    1. **Clone the repository**
-    ```bash
-    git clone https://github.com/haideralyy01/secondbrain.git
-    cd SecondBrain
-    ```
+### Prerequisites
 
-    2. **Backend setup**
-    ```bash
-    cd backend
-    npm install
-    ```
+- Node.js v16+
+- npm or yarn
+- MongoDB (local or [MongoDB Atlas](https://cloud.mongodb.com))
 
-    3. **Create `.env` file in backend root**
-    ```
-    PORT=3000
-    DB_CONNECTION_STRING=mongodb://localhost:27017/secondbrain
-    JWT_SECRET=your_secret_key_here
-    ```
+### 1. Clone the repository
 
-    4. **Frontend setup**
-    ```bash
-    cd ../frontend
-    npm install
-    ```
+```bash
+git clone https://github.com/haideralyy01/secondbrain.git
+cd SecondBrain
+```
 
-    ## Running the Application
+### 2. Backend setup
 
-    ### Development
+```bash
+cd backend
+npm install
+```
 
-    1. **Start backend server**
-    ```bash
-    cd backend
-    npm run dev
-    ```
-    Server runs on `http://localhost:3000`
+Create a `.env` file in the `backend/` root:
 
-    2. **Start frontend dev server** (in another terminal)
-    ```bash
-    cd frontend
-    npm run dev
-    ```
-    Frontend runs on `http://localhost:8080` (or displayed in terminal)
+```env
+PORT=3000
+DB_CONNECTION_STRING=mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/secondbrain?retryWrites=true&w=majority
+JWT_SECRET=your_super_secret_key_here
+```
 
-    ### Production Build
+> ⚠️ **Never commit your `.env` file.** Make sure `.env` is in your `.gitignore`.
 
-    **Frontend**
-    ```bash
-    cd frontend
-    npm run build
-    ```
-    Outputs to `frontend/dist/`
+> 💡 For local MongoDB use: `mongodb://localhost:27017/secondbrain`
 
-    **Backend**
-    ```bash
-    cd backend
-    npm run build
-    ```
-    Outputs to `backend/dist/`
+### 3. Frontend setup
 
-    ## API Endpoints
+```bash
+cd ../frontend
+npm install
+```
 
-    ### Authentication
-    - `POST /api/v1/signup` - Register new user (name, email, password)
-    - `POST /api/v1/signin` - Login user (email, password)
+---
 
-    ### Content Management
-    - `POST /api/v1/content` - Create content (title, type, link, body)
-    - `GET /api/v1/contents` - Fetch user's all content
-    - `PUT /api/v1/content/:id` - Update content by ID
-    - `DELETE /api/v1/content/:id` - Delete content by ID
+## ▶️ Running the Application
 
-    ### Sharing
-    - `POST /api/v1/brain/share` - Generate/get share link
-    - `GET /api/v1/brain/:shareLink` - Get public shared brain content
+### Development
 
-    All protected endpoints require `Authorization: <JWT_TOKEN>` header.
+Start the backend (in one terminal):
 
-    ## Data Models
+```bash
+cd backend
+npm run dev
+```
+Backend runs at `http://localhost:3000`
 
-    ### User
-    ```
-    {
-    name: String,
-    email: String (unique),
-    password: String (bcrypt hashed)
-    }
-    ```
+Start the frontend (in another terminal):
 
-    ### Content
-    ```
-    {
-    _id: ObjectId,
-    userId: ObjectId (ref: User),
-    title: String,
-    type: "youtube" | "twitter" | "note",
-    link: String,
-    body: String,
-    tags: [ObjectId]
-    }
-    ```
+```bash
+cd frontend
+npm run dev
+```
+Frontend runs at `http://localhost:8080`
 
-    ### Link (Share)
-    ```
-    {
-    _id: ObjectId,
-    userId: ObjectId (unique),
-    hash: String
-    }
-    ```
+> 💡 Make sure your backend allows CORS from `http://localhost:8080` in development.
 
-    ## Key Features Implementation
+### Production Build
 
-    ### Delete with Optimistic Update
-    Deletes immediately show on UI while API call happens in background; reverts if API fails.
+```bash
+# Frontend
+cd frontend
+npm run build
+# Output: frontend/dist/
 
-    ### Edit with Prefill
-    Modal opens with existing content pre-filled; `PUT` API updates content and replaces in dashboard.
+# Backend
+cd backend
+npm run build
+# Output: backend/dist/
+```
 
-    ### Atomic Share Link
-    Uses MongoDB upsert to prevent race conditions when creating/retrieving share links.
+---
 
-    ### Validation
-    Both frontend and backend validate inputs:
-    - Frontend: Real-time user feedback
-    - Backend: Zod schemas ensure data integrity
+## 📡 API Reference
 
-    ## Error Handling
-    - Form validation errors displayed to user
-    - API errors surfaced with meaningful messages
-    - Optimistic updates revert on backend failure
-    - 404 errors for missing shared brains
+### Authentication
 
-    ## Browser Support
-    Modern browsers with ES2020+ support (Chrome, Firefox, Safari, Edge)
+| Method | Endpoint | Body | Description |
+|--------|----------|------|-------------|
+| POST | `/api/v1/signup` | `{ name, email, password }` | Register new user |
+| POST | `/api/v1/signin` | `{ email, password }` | Login and get JWT |
 
-    ## Future Enhancements
-    - Full-text search across content
-    - Tags and advanced filtering
-    - Collaborate on shared brains
-    - Email notifications
-    - Dark mode
-    - Mobile app
+### Content
 
-    ## Contributing
-    1. Fork the repository
-    2. Create a feature branch (`git checkout -b feature/your-feature`)
-    3. Commit changes (`git commit -m 'feat: description'`)
-    4. Push to branch (`git push origin feature/your-feature`)
-    5. Open a Pull Request
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| POST | `/api/v1/content` | ✅ | Create content |
+| GET | `/api/v1/contents` | ✅ | Get all user content |
+| PUT | `/api/v1/content/:id` | ✅ | Update content by ID |
+| DELETE | `/api/v1/content/:id` | ✅ | Delete content by ID |
 
-    ## License
-    MIT License - feel free to use this project for personal or commercial purposes.
+### Sharing
 
-    ## Contact
-    For questions or feedback, please open an issue on GitHub.
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| POST | `/api/v1/brain/share` | ✅ | Generate/get share link |
+| GET | `/api/v1/brain/:shareLink` | ❌ | Get public shared brain |
+
+> All protected endpoints require the header: `Authorization: <JWT_TOKEN>`
+
+---
+
+## 🗄 Data Models
+
+### User
+```ts
+{
+  name: String,
+  email: String,       // unique
+  password: String     // bcrypt hashed
+}
+```
+
+### Content
+```ts
+{
+  _id: ObjectId,
+  userId: ObjectId,    // ref: User
+  title: String,
+  type: "youtube" | "twitter" | "note",
+  link: String,
+  body: String,
+  tags: [ObjectId]
+}
+```
+
+### Link (Share)
+```ts
+{
+  _id: ObjectId,
+  userId: ObjectId,    // unique
+  hash: String
+}
+```
+
+---
+
+## ⚙️ Key Implementation Details
+
+**Optimistic Delete** — Content disappears from the UI immediately; reverts automatically if the API call fails.
+
+**Edit with Prefill** — The edit modal opens pre-populated with existing content and sends a `PUT` request on save.
+
+**Atomic Share Link** — MongoDB upsert prevents race conditions when generating share links.
+
+**Dual Validation** — Zod schemas on the backend + real-time feedback on the frontend ensure data integrity end-to-end.
+
+---
+
+## 🔭 Future Enhancements
+
+- [ ] Full-text search across content
+- [ ] Tags and advanced filtering
+- [ ] Collaborative shared brains
+- [ ] Email notifications
+- [ ] Dark mode
+- [ ] Mobile app
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/your-feature`
+3. Commit your changes: `git commit -m 'feat: your description'`
+4. Push to branch: `git push origin feature/your-feature`
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+MIT License — free to use for personal or commercial purposes.
+
+---
+
+## 📬 Contact
+
+For questions or feedback, please [open an issue on GitHub](https://github.com/haideralyy01/secondbrain/issues).
