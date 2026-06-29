@@ -1,5 +1,6 @@
 import axios from "axios";
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import { BACKEND_URI } from "../config";
 
 interface User {
     name: string;
@@ -54,7 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     async function login(email: string, password: string) {
         try {
-            const res = await axios.post("http://localhost:3000/api/v1/signin", {
+            const res = await axios.post(`${BACKEND_URI}/api/v1/signin`, {
                 email,
                 password,
             });
@@ -73,7 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     async function signup(name: string, email: string, password: string) {
         try {
-            const res = await axios.post("http://localhost:3000/api/v1/signup", {
+            const res = await axios.post(`${BACKEND_URI}/api/v1/signup`, {
                 name,
                 email,
                 password,

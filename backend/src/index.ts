@@ -13,14 +13,15 @@ import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 
 const app = express();
-app.use(express.json());
 
 app.use(cors({
-    origin: 'http://localhost:8080',
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
 }));
+
+app.use(express.json());
 
 const authSchema = z.object({
     name: z.string().trim().min(2, "Name must be at least 2 characters long"),

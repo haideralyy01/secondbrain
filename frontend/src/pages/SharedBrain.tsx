@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Card } from "../components/Card";
+import { BACKEND_URI } from "../config";
 
 type ContentType = "youtube" | "twitter" | "note";
 
@@ -29,7 +30,7 @@ export function SharedBrain() {
             }
 
             try {
-                const res = await axios.get(`http://localhost:3000/api/v1/brain/${shareLink}`);
+                const res = await axios.get(`${BACKEND_URI}/api/v1/brain/${shareLink}`);
                 setCreatorName(res.data.name || res.data.email || "Anonymous");
                 setContent(res.data.content || []);
             } catch (err) {

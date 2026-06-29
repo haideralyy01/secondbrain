@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useRef, useState, useEffect } from "react";
 import { CrossIcon } from "../icons/CrossIcon";
+import { BACKEND_URI } from "../config";
 
 interface ModelProps {
     open: boolean;
@@ -61,14 +62,14 @@ export function CreateCardModel({ open, onClose, onCreate, contentToEdit, onUpda
             const token = localStorage.getItem("token");
             if (contentToEdit && contentToEdit._id) {
                 const res = await axios.put(
-                    `http://localhost:3000/api/v1/content/${contentToEdit._id}`,
+                    `${BACKEND_URI}/api/v1/content/${contentToEdit._id}`,
                     { title, type, link: link || "", body: body || "" },
                     { headers: { Authorization: token } }
                 );
                 onUpdate?.(res.data.content);
             } else {
                 const res = await axios.post(
-                    "http://localhost:3000/api/v1/content",
+                    `${BACKEND_URI}/api/v1/content`,
                     { title, type, link: link || "", body: body || "" },
                     { headers: { Authorization: token } }
                 );

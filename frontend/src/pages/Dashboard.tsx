@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { BACKEND_URI } from "../config";
 import { Card } from "../components/Card";
 import { CreateCardModel } from "../components/CreateContentModel";
 import { SideBar } from "../components/SideBar";
@@ -29,7 +30,7 @@ export function Dashboard() {
     useEffect(() => {
         async function loadContent() {
             const token = localStorage.getItem("token");
-            const res = await axios.get("http://localhost:3000/api/v1/contents", {
+            const res = await axios.get(`${BACKEND_URI}/api/v1/contents`, {
                 headers: {
                     Authorization: token,
                 },
@@ -65,7 +66,7 @@ export function Dashboard() {
         setAllContent((current) => current.filter((c) => c._id !== id));
         try {
             const token = localStorage.getItem("token");
-            await axios.delete(`http://localhost:3000/api/v1/content/${id}`, {
+            await axios.delete(`${BACKEND_URI}/api/v1/content/${id}`, {
                 headers: { Authorization: token },
             });
         } catch (err) {
@@ -82,7 +83,7 @@ export function Dashboard() {
 
             const token = localStorage.getItem("token");
             const res = await axios.post(
-                "http://localhost:3000/api/v1/brain/share",
+                `${BACKEND_URI}/api/v1/brain/share`,
                 { share: true },
                 {
                     headers: {
